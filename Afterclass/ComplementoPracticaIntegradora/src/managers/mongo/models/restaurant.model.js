@@ -15,21 +15,20 @@ const schema = new mongoose.Schema({
         type:String,
         unique:true
     },
-    menu:{
-        type:Array,
-        default:[
-            {
-                title:"water",
-                description:"Agua gratuita siempre en establecimiento",
-                price:0,
-                active:true
-            }
-        ]
-    },
+    menu:[
+        {
+            type:mongoose.SchemaTypes.ObjectId,
+            ref:'Dishes'
+        }
+    ],
     active:{
         type:Boolean,
         default:true
     }
+})
+
+schema.pre(['find','findOne','findById'],function(){
+    this.populate('menu');
 })
 
 const restaurantModel = mongoose.model(collection,schema);
