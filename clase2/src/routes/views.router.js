@@ -15,11 +15,11 @@ router.get('/login',(req,res)=>{
 })
 
 router.get('/profile',(req,res)=>{
-    if(!req.session.user){
+    if(!req.user){
         return res.redirect('/login')
     }
     res.render('Profile',{
-        user:req.session.user
+        user:req.user
     })
 })
 
