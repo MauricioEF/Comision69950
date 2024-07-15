@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
+import sessionsRouter from './routes/sessions.router.js';
 
 const app = express();
 
@@ -22,3 +23,4 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 app.use('/',viewsRouter);
+app.use('/api/sessions',sessionsRouter);
