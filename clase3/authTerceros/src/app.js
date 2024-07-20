@@ -18,7 +18,7 @@ const PORT = process.env.PORT||8080;
 
 const server = app.listen(PORT,()=>console.log(`Listening on PORT ${PORT}`));
 
-const connection = mongoose.connect("URL MONGO")
+const connection = mongoose.connect("MONGO_URL")
 
 app.engine('handlebars',handlebars.engine());
 app.set('views',`${__dirname}/views`);
@@ -32,7 +32,7 @@ app.use(session({
     saveUninitialized:false,
     //store: new FileStorage({path:`${__dirname}/sessions`,ttl:20,reapInterval:10})
     store:MongoStore.create({
-        mongoUrl:`URL MONGO`,
+        mongoUrl:`MONGO_URL`,
         ttl:60*60*24
     })
 }))

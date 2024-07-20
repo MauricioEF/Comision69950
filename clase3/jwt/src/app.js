@@ -1,6 +1,7 @@
 import express from 'express';
 import handlebars from 'express-handlebars';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
 import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
@@ -12,7 +13,7 @@ const PORT = process.env.PORT||8080;
 
 const server = app.listen(PORT,()=>console.log(`Listening on PORT ${PORT}`));
 
-const connection = mongoose.connect(`AQUÍ LA URL DE ATLAS O LOCAL`)
+const connection = mongoose.connect(`MONGO URL`)
 
 app.engine('handlebars',handlebars.engine());
 app.set('views',`${__dirname}/views`);
@@ -21,6 +22,8 @@ app.set('view engine','handlebars');
 app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
+app.use(cookieParser());
 
 app.use('/',viewsRouter);
 app.use('/api/sessions',sessionsRouter);

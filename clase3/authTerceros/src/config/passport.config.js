@@ -1,5 +1,6 @@
 import passport from "passport";
 import local from 'passport-local';
+import { Strategy as GithubStrategy } from "passport-github2";
 
 import { usersService } from "../managers/index.js";
 import AuthService from "../services/AuthService.js";
@@ -46,6 +47,33 @@ const initializePassportConfig = () =>{
         }
         //Ya no creo la sesión aquí
         return done(null,user._id);
+    }))
+
+    passport.use('github', new GithubStrategy({
+         clientID:'Iv23livhAkemaLsL4QEf',
+         clientSecret:'72e6df6a6f3c6f7691c121d8ad9d7b3cf01cec2c',
+         callbackURL:'http://localhost:8080/api/sessions/githubcallback'
+    },async(token,refreshToken,profile,done)=>{
+        console.log(profile);
+        const userInfo = profile._json;
+        if(!userInfo){
+            return done(null,false,{message:"Error loging from Github"});
+        }
+        const user = await usersService.getUserByEmail(userInfo.email);
+        //si el usuario ya existe
+        if(user){
+            //Entonces no me preocupo, ya tengo sus datos.
+            return done(null,user._id);
+        }
+        //¿No existe? VAAAA lo creo
+        const newUser = {
+            firstName:userInfo.name.split(' ')[0],
+            lastName: userInfo.name.split(' ')[1],
+            password:'',
+            email:userInfo.email
+        }
+        const result = await usersService.createUser(newUser);
+        return done(null,result._id);
     }))
 
     passport.serializeUser((userId,done)=>{

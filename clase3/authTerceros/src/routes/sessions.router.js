@@ -29,6 +29,14 @@ sessionsRouter.get('/failureLogin',(req,res)=>{
     res.send("error");
 })
 
+//Sólo trigger
+sessionsRouter.get('/github',passport.authenticate('github'),(req,res)=>{})
+
+//Éste ya resuelve al user final
+sessionsRouter.get('/githubcallback',passport.authenticate('github'),(req,res)=>{
+    res.redirect('/profile');
+})
+
 sessionsRouter.get('/current',async(req,res)=>{
     if(!req.user){
         return res.status(401).send({status:"error",error:"Not logged in"});
