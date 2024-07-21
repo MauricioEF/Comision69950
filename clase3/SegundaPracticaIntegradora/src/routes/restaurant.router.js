@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { dishesService, restaurantsService } from "../managers/index.js";
+import { dishesService, restaurantsService, restaurantUsersService, usersService } from "../managers/index.js";
 import { makeid } from "../utils.js";
+import AuthService from "../services/AuthService.js";
 
 
 
@@ -12,15 +13,22 @@ router.get('/',async (req,res)=>{
 })
 
 router.post('/',async(req,res)=>{
-    const restaurant = req.body;
-    if(!restaurant.name){
+    const {name,address,slogan,category,adminFirstName,adminLastName,adminEmail,adminPassword} = req.body;
+
+    if(!name||!adminEmail){
         return res.status(400).send({status:"error",error:"Incomplete values"})
     }
+    const user = await usersService.getUserByEmail(adminEmail);
+    if(user){
+        return res.status(400).send({status:"error",error:"User already exists"});
+    }
+
     const newRestaurant = {
-        name:restaurant.name,
-        address:restaurant.address||"Sin especificar",
-        slogan: restaurant.slogan,
-        slug: `${restaurant.name.replaceAll(' ','_')}_${makeid(4)}`
+        name:name,
+        address:address||"Sin especificar",
+        slogan: slogan,
+        category,
+        slug: `${name.replaceAll(' ','_')}_${makeid(4)}`
     }
 
     const mandatoryWater = await dishesService.createDish({
@@ -28,14 +36,35 @@ router.post('/',async(req,res)=>{
         description:"Siempre gratis en establecimiento",
         price:0,
         active:true,
-        slug:`${restaurant.name}_mandatorywater`
+        slug:`${name}_mandatorywater`
     })
     newRestaurant.menu = [
         mandatoryWater._id
     ]
 
-    const result = await restaurantsService.createRestaurant(newRestaurant);
-    return res.send({status:"success",message:"Restaurant created"})
+    const restaurantResult = await restaurantsService.createRestaurant(newRestaurant);
+
+    //Una vez creado el restaurante, voy a crear el usuario
+    
+    const authService = new AuthService();
+    const hashedPassword = await authService.hashPassword(adminPassword);
+    const newUser = {
+        firstName:adminFirstName,
+        lastName:adminLastName,
+        email:adminEmail,
+        password:hashedPassword,
+        role:'admin'
+    }
+    const userResult = await usersService.createUser(newUser);
+
+    //Ya teniendo el Id del restaurant, y el Id del usuario, los conectamos.
+
+    const linkResult = await restaurantUsersService.createLink(userResult._id,restaurantResult._id)
+
+    return res.send({status:"success",message:"Restaurant and users created",payload:{
+        userId:userResult._id,
+        restaurantId:restaurantResult._id
+    }})
 })
 
 

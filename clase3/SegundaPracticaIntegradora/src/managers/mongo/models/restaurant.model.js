@@ -25,7 +25,7 @@ const schema = new mongoose.Schema({
         type:Boolean,
         default:true
     }
-})
+}, {timestamps:true})
 
 schema.pre(['find','findOne','findById'],function(){
     this.populate('menu');

@@ -26,7 +26,7 @@ const schema = new mongoose.Schema({
     restaurant: {
         type:mongoose.SchemaTypes.ObjectId
     }
-})
+},{timestamps:true})
 
 const dishesModel = mongoose.model(collection,schema);
 
