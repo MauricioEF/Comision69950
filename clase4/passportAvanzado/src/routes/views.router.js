@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "passport";
 
 const router = Router();
 
@@ -14,12 +15,14 @@ router.get('/login',(req,res)=>{
     res.render('Login');
 })
 
-router.get('/profile',(req,res)=>{
+router.get('/profile',passport.authenticate('current',{session:false}),(req,res)=>{
+    console.log(req.user);
+
     if(!req.user){
         return res.redirect('/login')
     }
     res.render('Profile',{
-        user:req.user
+        user: req.user
     })
 })
 
