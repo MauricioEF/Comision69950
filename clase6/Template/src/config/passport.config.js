@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { ExtractJwt, Strategy as JWTStrategy} from "passport-jwt";
 
-import { usersService } from "../db/index.js";
+import { usersService } from "../services/services.js";
 import AuthService from "../services/AuthService.js";
 
 const initializePassportConfig = () =>{

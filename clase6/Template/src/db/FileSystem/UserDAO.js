@@ -1,9 +1,15 @@
-import usersModel from "./models/user.model.js";
+import fs from 'fs';
 
-export default class UserManager {
+export default class UserFileDataSource{
+    constructor(){
 
+    }
+
+    readFile() {
+
+    }
     getUsers(){
-        return usersModel.find();
+        return  this.readFile(this.path);
     }
 
     getUserById(userId){

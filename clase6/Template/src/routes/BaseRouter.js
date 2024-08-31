@@ -35,6 +35,7 @@ export default class BaseRouter {
 
     generateCustomResponses(req,res,next){
         res.sendSuccess = (message) => res.status(200).send({status:"success",message});
+        res.sendSuccessWithPayload = (payload) => res.status(200).send({status:"success", payload})
         res.sendBadRequest = (reason) => res.status(400).send({status:"success",error:reason});
         res.sendUnauthorized = (reason) => res.status(401).send({status:"error",error:reason||"Unauthorized"})
         next();

@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import {fork} from 'child_process';
+import cors from 'cors';
 
 
 import __dirname from './utils.js';
@@ -11,6 +12,7 @@ import viewsRouter from './routes/views.router.js';
 import ViewsRouter from './routes/ViewsRouter.js';
 import sessionsRouter from './routes/sessions.router.js';
 import SessionsRouter from './routes/SessionsRouter.js';
+import UsersRouter from './routes/UsersRouter.js';
 import initializePassportConfig from './config/passport.config.js';
 import config from './config/config.js';
 
@@ -19,8 +21,6 @@ const app = express();
 const PORT = config.app.PORT;
 
 const server = app.listen(PORT,()=>console.log(`Listening on PORT ${PORT}`));
-
-const connection = mongoose.connect(config.mongo.URL)
 
 app.engine('handlebars',handlebars.engine());
 app.set('views',`${__dirname}/views`);
@@ -31,11 +31,16 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 
+app.use(cors({
+    origin: ['http://localhost:5173']
+}))
+
 initializePassportConfig();
 app.use(passport.initialize());
 
 app.use('/',ViewsRouter);
 app.use('/api/sessions',SessionsRouter);
+app.use('/api/users',UsersRouter);
 
 
 function tareaCompleja() {
